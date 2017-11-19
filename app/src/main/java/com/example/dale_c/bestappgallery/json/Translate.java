@@ -1,4 +1,4 @@
-package com.example.dale_c.bestappgallery;
+package com.example.dale_c.bestappgallery.json;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,14 +6,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by Dale_C on 09.11.2017.
+ * Created by Dale_C on 19.11.2017.
  */
 
-public class PhotoItem {
-
+public class Translate {
     @SerializedName("code")
     @Expose
-    private Integer code;
+    private int code;
     @SerializedName("lang")
     @Expose
     private String lang;
@@ -21,11 +20,11 @@ public class PhotoItem {
     @Expose
     private List<String> text = null;
 
-    public Integer getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
@@ -44,5 +43,4 @@ public class PhotoItem {
     public void setText(List<String> text) {
         this.text = text;
     }
-
 }

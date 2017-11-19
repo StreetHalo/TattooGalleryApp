@@ -1,25 +1,9 @@
 package com.example.dale_c.bestappgallery;
 
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.dale_c.bestappgallery.retrofit.ConnectGoogle;
 
 
 /**
@@ -28,11 +12,13 @@ import java.util.List;
 
 public class PhotoGalleryFragment extends Fragment {
     public static final String TAG = "PhotoGalleryFragment";
+    public static final String URL_TRANSLATE = "https://translate.yandex.net/";
+    public static final String URL_IMAGES = "https://api.qwant.com/";
 
 
-    private RecyclerView mPhotoRecyclerView;
-    private List<PhotoItem> mItems = new ArrayList<>();
-    private ConnectGoogle connectGoogle;
+    ConnectGoogle conImage = new ConnectGoogle(URL_IMAGES);
+    ConnectGoogle conTranslate = new ConnectGoogle(URL_TRANSLATE);
+
 
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
@@ -44,11 +30,12 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        updateSearch();
+        conImage.getImage();
+
     }
 
 
-    @Override
+  /*  @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
@@ -61,7 +48,6 @@ public class PhotoGalleryFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "onQueryTextSubmit: "+query);
                 QueryPreferences.setStoredQuery(getActivity(),query);
-                 updateSearch();
                 return true;
             }
 
@@ -69,7 +55,6 @@ public class PhotoGalleryFragment extends Fragment {
                 switch (item.getItemId()){
                     case R.id.menu_item_clear:
                         QueryPreferences.setStoredQuery(getActivity(),null);
-                        updateSearch();
                         return true;
                     default:
                         return PhotoGalleryFragment.super.onOptionsItemSelected(item);
@@ -83,10 +68,7 @@ public class PhotoGalleryFragment extends Fragment {
             }
         });
     }
-    private void updateSearch(){
-        String query = QueryPreferences.getStoredQuery(getActivity());
-        new httpGet(query).execute();
-    }
+
 
 
     @Override
@@ -134,13 +116,11 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(PhotoHolder holder, int position) {
             PhotoItem galleryItem = mGalleryItems.get(position);
-            System.out.println("TTTT"+galleryItem.getmThumbnail());
-            Picasso
-                    .with(getActivity())
-                   // .load(galleryItem.getmUrl())
-                    .load("https:"+galleryItem.getmThumbnail())
-                    .placeholder(R.drawable.wait)
-                    .into(holder.mItemImageView);
+            //Picasso
+                 //   .with(getActivity())
+             //       .load("https:")
+                //    .placeholder(R.drawable.wait)
+              //      .into(holder.mItemImageView);
         }
 
         @Override
@@ -148,28 +128,5 @@ public class PhotoGalleryFragment extends Fragment {
             return mGalleryItems.size();
         }
     }
-
-
-    private class httpGet extends AsyncTask<Void,Void,List<PhotoItem>>{
-
-        private String mQuery;
-        public httpGet(String query){
-            mQuery = query;
-        }
-
-        @Override
-        protected List<PhotoItem> doInBackground(Void... voids) {
-
-
-           return new ConnectGoogle()
-                   .takeJSON(mQuery);
-
-        }
-
-        @Override
-        protected void onPostExecute(List<PhotoItem> photoItems) {
-            mItems = photoItems;
-            setupAdapter();
-        }
-    }
+*/
 }
