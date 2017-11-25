@@ -17,7 +17,6 @@ import retrofit2.http.Query;
 
 
 public interface APIServiceImages{
-  //  https://api.qwant.com/api/search/images?count=10&offset=1&q=tattoo_ideas
     @GET("/api/search/images?")
     Call<ParseGson> getData(@Query("count") int count, @Query("set") int set, @Query("q") String query);
 
