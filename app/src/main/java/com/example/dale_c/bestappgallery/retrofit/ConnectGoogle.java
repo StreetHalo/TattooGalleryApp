@@ -23,7 +23,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ConnectGoogle {
 
-    public static final String URL = "https://api.qwant.com/api/search/images?count=150&offset=";
     public static final String TAG = "ConnectDog";
 
     private Retrofit retrofit;
@@ -31,17 +30,15 @@ public class ConnectGoogle {
     private static APIServiceTranslate apiServiceTranslate;
 
     ParseGson parseGson = new ParseGson();
-    List<Item> items = new ArrayList<>();
     Translate translate = new Translate();
 
+    private CallbackImg callbackImg;
 
-    public List<Item> getItems() {
-        return items;
+
+    public void registerCallBack(CallbackImg callbackImg){
+        this.callbackImg = callbackImg;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
 
     public ConnectGoogle(String url){
 
@@ -51,7 +48,6 @@ public class ConnectGoogle {
         .build();
         if(url.equals("https://api.qwant.com/")){
             apiServiceImages = retrofit.create(APIServiceImages.class);
-            System.out.println("qwant!");
 
         }
 
@@ -66,14 +62,12 @@ public class ConnectGoogle {
             @Override
             public void onResponse(Call<ParseGson> call, Response<ParseGson> response) {
                parseGson = response.body();
-              items = parseGson.getData().getResult().getItems();
-                Log.d(TAG, "onResp: "+items.size());
-
+                callbackImg.callingBack(parseGson);
             }
 
             @Override
             public void onFailure(Call<ParseGson> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.getMessage());
+                Log.e(TAG, "onFailure: "+t.getMessage());
             }
         });
     }
