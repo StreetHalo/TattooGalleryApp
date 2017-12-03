@@ -2,7 +2,6 @@ package com.example.dale_c.bestappgallery;
 
 import android.util.Log;
 
-import com.example.dale_c.bestappgallery.retrofit.CallbackImg;
 import com.example.dale_c.bestappgallery.retrofit.ConnectGoogle;
 
 /**
@@ -11,24 +10,24 @@ import com.example.dale_c.bestappgallery.retrofit.ConnectGoogle;
 
 public class Repository  {
 
-    public static final String TAG = "Repository";
-    public static final String URL_TRANSLATE = "https://translate.yandex.net/";
-    public static final String URL_IMAGES = "https://api.qwant.com/";
-    ConnectGoogle conImage;
-    ConnectGoogle conTranslate ;
+    private static final String TAG = "Repository";
+    private static final String URL_TRANSLATE = "https://translate.yandex.net/";
+    private static final String URL_IMAGES = "https://api.qwant.com/";
+    private ConnectGoogle conImage;
+    private ConnectGoogle conTranslate ;
 
 
 
 
-    public  Repository(){
+     public  Repository(){
          conImage = new ConnectGoogle(URL_IMAGES);
          conTranslate = new ConnectGoogle(URL_TRANSLATE);
 
     }
 
-    public void conRetrofit(String word, CallbackImg callbackImg){
+    public void conRetrofit(String word, CallbackPresenter callbackPresenter){
         Log.d(TAG, "conRetrofit: "+word);
-        conImage.registerCallBack(callbackImg);
+        conImage.registerCallBack(callbackPresenter);
         conImage.getImage(word);
 
     }

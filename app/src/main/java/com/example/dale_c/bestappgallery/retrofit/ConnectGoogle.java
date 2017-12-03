@@ -3,12 +3,9 @@ package com.example.dale_c.bestappgallery.retrofit;
 import android.util.Log;
 
 
-import com.example.dale_c.bestappgallery.json.Item;
+import com.example.dale_c.bestappgallery.CallbackPresenter;
 import com.example.dale_c.bestappgallery.json.ParseGson;
 import com.example.dale_c.bestappgallery.json.Translate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,11 +29,12 @@ public class ConnectGoogle {
     ParseGson parseGson = new ParseGson();
     Translate translate = new Translate();
 
-    private CallbackImg callbackImg;
+
+    private CallbackPresenter callbackPresenter;
 
 
-    public void registerCallBack(CallbackImg callbackImg){
-        this.callbackImg = callbackImg;
+    public void registerCallBack(CallbackPresenter callbackPresenter){
+        this.callbackPresenter = callbackPresenter;
     }
 
 
@@ -62,7 +60,7 @@ public class ConnectGoogle {
             @Override
             public void onResponse(Call<ParseGson> call, Response<ParseGson> response) {
                parseGson = response.body();
-                callbackImg.callingBack(parseGson);
+                callbackPresenter.callingbackGson(parseGson);
             }
 
             @Override

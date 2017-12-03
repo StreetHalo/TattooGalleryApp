@@ -1,6 +1,5 @@
-package com.example.dale_c.bestappgallery;
+package com.example.dale_c.bestappgallery.mainCativity;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,26 +12,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.example.dale_c.bestappgallery.json.Item;
-import com.example.dale_c.bestappgallery.json.Result;
-import com.example.dale_c.bestappgallery.retrofit.ConnectGoogle;
-import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.dale_c.bestappgallery.Presenter;
+import com.example.dale_c.bestappgallery.QueryPreferences;
+import com.example.dale_c.bestappgallery.R;
+import com.example.dale_c.bestappgallery.RecyclerViewAdapter;
 
 
 /**
  * Created by Dale_C on 02.11.2017.
  */
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends Fragment  {
     public static final String TAG = "PGF ";
 
 
-    private List<Item> mItems = new ArrayList<>();
     private RecyclerView recyclerView;
     Presenter presenter;
 
@@ -47,9 +41,9 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         recyclerView = new RecyclerView(getActivity());
         presenter = new Presenter(this);
-
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
@@ -57,6 +51,7 @@ public class PhotoGalleryFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
         View v = inflater.inflate(R.layout.activity_photo_gallery, container, false);
         recyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
@@ -64,7 +59,12 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
 
-  @Override
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
@@ -99,11 +99,9 @@ public class PhotoGalleryFragment extends Fragment {
         });
     }
 
-
-
-
     public void setAdapter(RecyclerViewAdapter adapter){
         Log.d(TAG, "setAdapter: ");
         recyclerView.setAdapter(adapter);
     }
+
 }
