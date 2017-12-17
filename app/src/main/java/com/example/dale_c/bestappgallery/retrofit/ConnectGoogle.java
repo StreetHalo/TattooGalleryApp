@@ -53,14 +53,16 @@ public class ConnectGoogle {
 
     }
 
-    public void getImage( String query){
-
-        apiServiceImages.getData(150,1,query).enqueue(new Callback<ParseGson>() {
+    public void getImage( String query, int offset){
+        Log.d(TAG, "offset: "+offset);
+        apiServiceImages.getData(120,offset,query).enqueue(new Callback<ParseGson>() {
 
             @Override
             public void onResponse(Call<ParseGson> call, Response<ParseGson> response) {
                parseGson = response.body();
+                Log.d(TAG, "onResponse: "+response.body().getData().getResult().getItems().size());
                 callbackPresenter.callingbackGson(parseGson);
+
             }
 
             @Override

@@ -6,7 +6,6 @@ import com.example.dale_c.bestappgallery.SingleFragmentActivity;
 
 public class MainActivity extends SingleFragmentActivity {
 
-
     @Override
     protected Fragment createFragment() {
         return PhotoGalleryFragment.newInstance();

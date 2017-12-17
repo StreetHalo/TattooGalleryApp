@@ -1,6 +1,5 @@
-package com.example.dale_c.bestappgallery;
+package com.example.dale_c.bestappgallery.mainCativity;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.dale_c.bestappgallery.itemCativity.ItemActivity;
+import com.example.dale_c.bestappgallery.CallbackPresenter;
+import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.json.Item;
 import com.squareup.picasso.Picasso;
 
@@ -26,14 +26,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static final String TAG = "Adapter";
     private List<Item> mItems = new ArrayList<>();
     Item galleryItem;
+    private int position;
+    private CallbackPresenter callbackPresenter;
 
 
-    public RecyclerViewAdapter(List<Item> mItems){
-        if(mItems!=null){
-            Log.d(TAG, "RecyclerViewAdapter: notNull");
-            this.mItems = mItems;
-        }
-        Log.d(TAG, "RecyclerViewAdapter: ");
+
+    public RecyclerViewAdapter(List<Item> mItems, CallbackPresenter callbackPresenter){
+        this.callbackPresenter = callbackPresenter;
+        if(mItems!=null) this.mItems = mItems;
     }
     @Override
     public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -45,21 +45,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final PhotoHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: ");
+
         galleryItem = mItems.get(position);
+        Log.d(TAG, "onBindViewHolder: "+position);
+
         holder.mItemImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: "+mItems.get(position).getMedia());
-                Intent intent = new Intent(holder.mItemImageView.getContext(),ItemActivity.class);
-                intent.putExtra("URL",mItems.get(position).getMedia());
-                view.getContext().startActivity(intent);
+                callbackPresenter.callingBackFragment(holder.mItemImageView.getContext(),position);
             }
         });
         Picasso
                 .with(holder.itemView.getContext())
                 .load("https:"+galleryItem.getThumbnail())
-                .placeholder(R.drawable.wait)
+                .placeholder(R.layout.loading_animation)
                 .into(holder.mItemImageView);
     }
 
@@ -78,6 +78,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 }
 
 

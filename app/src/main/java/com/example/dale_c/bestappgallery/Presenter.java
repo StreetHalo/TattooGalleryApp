@@ -1,11 +1,16 @@
 package com.example.dale_c.bestappgallery;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.example.dale_c.bestappgallery.itemCativity.RecyclerViewAdapterItem;
+import com.example.dale_c.bestappgallery.itemCativity.ItemActivity;
+import com.example.dale_c.bestappgallery.itemCativity.ItemFragment;
 import com.example.dale_c.bestappgallery.json.Item;
 import com.example.dale_c.bestappgallery.json.ParseGson;
 import com.example.dale_c.bestappgallery.mainCativity.PhotoGalleryFragment;
+import com.example.dale_c.bestappgallery.mainCativity.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,42 +20,75 @@ import java.util.List;
  */
 
 public class Presenter implements CallbackPresenter {
-    private RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(getItems());
+    private static Presenter presenter;
     private Repository repository;
     private PhotoGalleryFragment photoGalleryFragment;
+    private ItemFragment itemFragment;
+    private SharedPref sharedPref;
+    private int position;
+    private int offset;
 
     private static final String TAG = "Presenter";
+
+
+
     private List<Item> items = new ArrayList<>();
+    private String word;
 
 
+    public static Presenter getInstance() {
+        if (presenter == null) {
+            presenter = new Presenter();
+        }
+        return presenter;
+    }
 
-    public Presenter(PhotoGalleryFragment photoGalleryFragment){
-        Log.d(TAG, "Presenter: ");
-        this.photoGalleryFragment = photoGalleryFragment;
+    private Presenter(){
         repository = new Repository();
     }
 
-    public void SearchWord(String word){
-        Log.d(TAG, "SearchWord: "+word);
-        repository.conRetrofit(word,this);
+    public void setPhotoGalleryFragment(PhotoGalleryFragment photoGalleryFragment) {
+        this.photoGalleryFragment = photoGalleryFragment;
+        sharedPref = new SharedPref(photoGalleryFragment.getContext());
+
     }
+
+    public void setItemFragment(ItemFragment itemFragment) {
+        this.itemFragment = itemFragment;
+        itemFragment.setAdapter(new RecyclerViewAdapterItem(items), position);
+
+    }
+
+    public void SearchWord(String word){
+        this.word = word;
+        offset = 0;
+        items.clear();
+        repository.conRetrofit(word,this, 0);
+    }
+
 
 
     @Override
     public void callingbackGson(ParseGson parseGson) {
-        setItems(parseGson.getData().getResult().getItems());
-        Log.d(TAG, "callingBack: "+items.size());
-        photoGalleryFragment.setAdapter(new RecyclerViewAdapter(parseGson.getData().getResult().getItems()));
+
+        items=parseGson.getData().getResult().getItems();
+
+        if(items.size()!=0) photoGalleryFragment.setAdapter(new RecyclerViewAdapter(items,this));
+
+        else            Log.d(TAG, "callingBackFragment: "+"The end");
+
+    }
+
+    @Override
+    public void callingBackFragment(Context context, int position) {
+        this.position = position;
+        Intent intent = new Intent(context,ItemActivity.class);
+        context.startActivity(intent);
     }
 
 
-    public List<Item> getItems() {
-        return items;
+    public int getPosition() {
+        return position;
     }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
 }
 

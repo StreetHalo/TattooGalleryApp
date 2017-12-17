@@ -25,10 +25,10 @@ public class Repository  {
 
     }
 
-    public void conRetrofit(String word, CallbackPresenter callbackPresenter){
+    public void conRetrofit(String word, CallbackPresenter callbackPresenter, int n){
         Log.d(TAG, "conRetrofit: "+word);
         conImage.registerCallBack(callbackPresenter);
-        conImage.getImage(word);
+        conImage.getImage(word, n);
 
     }
 

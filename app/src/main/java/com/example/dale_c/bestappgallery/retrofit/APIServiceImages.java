@@ -18,6 +18,6 @@ import retrofit2.http.Query;
 
 public interface APIServiceImages{
     @GET("/api/search/images?")
-    Call<ParseGson> getData(@Query("count") int count, @Query("set") int set, @Query("q") String query);
+    Call<ParseGson> getData(@Query("count") int count, @Query("offset") int set, @Query("q") String query);
 
 }
