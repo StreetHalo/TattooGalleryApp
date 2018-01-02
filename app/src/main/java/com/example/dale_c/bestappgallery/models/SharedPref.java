@@ -1,4 +1,4 @@
-package com.example.dale_c.bestappgallery;
+package com.example.dale_c.bestappgallery.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;

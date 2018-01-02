@@ -4,9 +4,11 @@
     android:id="@+id/activity_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Background"
     >
     <include layout="@layout/toolbar"
         />
+
 
     <FrameLayout
 
