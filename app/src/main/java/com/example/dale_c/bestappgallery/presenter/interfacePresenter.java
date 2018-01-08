@@ -11,5 +11,6 @@ import com.example.dale_c.bestappgallery.json.ParseGson;
 
 public interface interfacePresenter {
     void callingbackGson(ParseGson parseGson);
-
 }
+
+

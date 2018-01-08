@@ -1,10 +1,13 @@
 package com.example.dale_c.bestappgallery.view;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -28,7 +31,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static android.content.ContentValues.TAG;
+
 public class MainActivity  extends AppCompatActivity implements InterfaceView {
+
+    private static final String QUERIES = "Queries";
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private Set<String> queries = new HashSet<>();
+
+
+
+
     private static final String TAG = "Activity";
     public static final String ITEM_FRAGMENT = "itemFragment";
     public static final String FAV_ITEM_FRAGMENT = "favItemFragment";
@@ -55,20 +69,22 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
    private int selectedPic;
    private InputMethodManager imm;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_activity);
 
-        requests = new HashSet<>();
-        requests.add("Best tattoo ever");
+        presenter = Presenter.getInstance(getBaseContext());
+        presenter.setInterfaceView(this);
         Toolbar mActionBarToolbar = (Toolbar)findViewById(R.id.toolbar);
-        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         setSupportActionBar(mActionBarToolbar);
 
-         presenter = Presenter.getInstance();
-         presenter.setInterfaceView(this);
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
+        requests = new HashSet<>();
+        requests.addAll(presenter.getRequestsfrmSharedPref());
+        Log.d(TAG, "onCreate requests: "+requests.size());
          galleryFragment = new GalleryFragment(this,GALLERY_FRAGMENT);
          itemFragment =  new ItemFragment(this, ITEM_FRAGMENT);
          favGalleryFragment = new GalleryFragment(this,FAV_GALLERY_FRAGMENT);
@@ -77,7 +93,8 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {getMenuInflater().inflate(R.menu.menu_main_activity,menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_activity,menu);
 
         searchItem = menu.findItem(R.id.action_search);
         likeItem = menu.findItem(R.id.like_pic);
@@ -88,7 +105,7 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
 
       final AppCompatAutoCompleteTextView searchView = (AppCompatAutoCompleteTextView) searchItem.getActionView();
 
-      searchView.setDropDownWidth(300);
+    searchView.setDropDownWidth(300);
       searchView.setWidth(750);
       searchView.setSingleLine();
 
@@ -182,6 +199,9 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        Log.d(TAG, "onOptionsItemSelected: "+item.getItemId());
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -317,4 +337,12 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
 
         return presenter.getSavedPics();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: "+requests);
+      presenter.setRequestsfrmSharedPref(requests);
+    }
+
 }

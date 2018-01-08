@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Dale_C on 25.11.2017.
@@ -32,17 +33,18 @@ public class Presenter implements interfacePresenter {
 
     private static final String TAG = "Presenter";
 
-    public static Presenter getInstance() {
+    public static Presenter getInstance(Context context) {
         if (presenter == null) {
-            presenter = new Presenter();
+            presenter = new Presenter(context);
         }
         return presenter;
     }
 
 
-    private Presenter(){
+    private Presenter(Context context){
         repository = new Repository();
         folderManager = new FolderManager();
+        sharedPref = new SharedPref(context);
     }
 
     public void setInterfaceView(InterfaceView interfaceView){
@@ -94,6 +96,14 @@ public class Presenter implements interfacePresenter {
 
     public void updateSavedPic(){
         folderManager.updateSavedPics();
+    }
+
+    public void setRequestsfrmSharedPref(Set<String> requests){
+        sharedPref.setRequests(requests);
+    }
+
+    public Set<String> getRequestsfrmSharedPref(){
+        return  sharedPref.getRequests();
     }
 
 }
