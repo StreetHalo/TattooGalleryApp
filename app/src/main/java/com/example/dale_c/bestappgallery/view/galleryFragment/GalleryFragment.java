@@ -1,6 +1,7 @@
 package com.example.dale_c.bestappgallery.view.galleryFragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.view.InterfaceView;
+import com.example.dale_c.bestappgallery.view.MainActivity;
 
 
 /**
@@ -21,16 +23,18 @@ import com.example.dale_c.bestappgallery.view.InterfaceView;
 @SuppressLint("ValidFragment")
 public class GalleryFragment extends Fragment   {
 
-    public static final String TAG = "galleryFragment";
+    private static final String TAG = "galleryFragment";
 
     private RecyclerView recyclerView;
 
     private InterfaceView interfaceView;
 
+    private String fragment;
 
     @SuppressLint("ValidFragment")
-    public GalleryFragment(InterfaceView interfaceView){
+    public GalleryFragment(InterfaceView interfaceView, String fragment){
         this.interfaceView = interfaceView;
+        this.fragment = fragment;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class GalleryFragment extends Fragment   {
         View v = inflater.inflate(R.layout.layout_gallery_fragment, container, false);
         recyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        setAdapter(new GalleryAdapter(interfaceView.getItems(),interfaceView));
+        if(fragment== MainActivity.FAV_GALLERY_FRAGMENT) setAdapter(new GalleryAdapter(interfaceView.getSavedPics(),interfaceView,MainActivity.FAV_GALLERY_FRAGMENT));
+
         return v;
     }
 
@@ -68,21 +73,41 @@ public class GalleryFragment extends Fragment   {
         recyclerView.setAdapter(adapter);
     }
 
-    public void setAdapter(FavGalleryAdapter adapter){
-        recyclerView.setAdapter(adapter);
-    }
 
     @Override
     public void onResume() {
         super.onResume();
-        interfaceView.setGalleryToolbar();
+      interfaceView.setGalleryToolbar();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: ");
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
 }

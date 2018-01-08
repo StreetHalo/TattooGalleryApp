@@ -4,17 +4,15 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.example.dale_c.bestappgallery.Repository;
-import com.example.dale_c.bestappgallery.SavingImg;
-import com.example.dale_c.bestappgallery.models.SavedRequests;
+import com.example.dale_c.bestappgallery.models.FolderManager;
+import com.example.dale_c.bestappgallery.models.Repository;
+import com.example.dale_c.bestappgallery.models.SavingPic;
 import com.example.dale_c.bestappgallery.models.SharedPref;
-import com.example.dale_c.bestappgallery.models.RegularExpression;
 import com.example.dale_c.bestappgallery.view.InterfaceView;
 import com.example.dale_c.bestappgallery.json.Item;
 import com.example.dale_c.bestappgallery.json.ParseGson;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +26,9 @@ public class Presenter implements interfacePresenter {
     private SharedPref sharedPref;
     private int offset;
     private List<Item> items = new ArrayList<>();
+    private FolderManager folderManager;
     private InterfaceView interfaceView;
-    private int likePosition;
-    private RegularExpression regularExpression;
-    private SavedRequests savedRequests;
+    private String codeWord = "tattoo";
 
     private static final String TAG = "Presenter";
 
@@ -44,46 +41,37 @@ public class Presenter implements interfacePresenter {
 
 
     private Presenter(){
-        regularExpression = new RegularExpression();
-        savedRequests = new SavedRequests();
         repository = new Repository();
-
-        File folder = new File("/storage/emulated/0/Pictures"+ File.separator + "Ink");
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
+        folderManager = new FolderManager();
     }
 
     public void setInterfaceView(InterfaceView interfaceView){
         this.interfaceView = interfaceView;
     }
 
+    public void delPic(int position){
 
-
+        folderManager.delSavedPic(position);
+    }
 
     public void saveLikePosition(int position, Context context, ImageView imageView){
-        likePosition=position;
-         Picasso.with(context)
-                 .load(items.get(position).getMedia())
-                   .into(new SavingImg(items.get(position).getId(), imageView ));
+                items.get(position).setLiked();
+                Picasso.with(context)
+                        .load(items.get(position).getMedia())
+                        .into(new SavingPic(items.get(position).getId(),imageView));
+            }
 
-    }
 
 
-    public void foundOldRequest(String request){
-        regularExpression.setRequest(request);
-    }
+
 
     public void SearchWord(String word){
-      //  word = word.concat(" tattoo ideas jpg");
 
+        word = word.concat(codeWord);
         offset = 0;
         items.clear();
         Log.d(TAG, "SearchWord: "+word);
         repository.conRetrofit(word,this, 0);
-        savedRequests.addRequest(word);
-        regularExpression.setRequests(savedRequests.getRequests());
-        regularExpression.removeMaths();
     }
 
 
@@ -93,7 +81,7 @@ public class Presenter implements interfacePresenter {
 
         items=parseGson.getData().getResult().getItems();
 
-        if(items.size()!=0) interfaceView.setGalleryAdapter(items);
+        if(items.size()!=0) interfaceView.uploadGalleryAdapter();
 
     }
 
@@ -101,5 +89,12 @@ public class Presenter implements interfacePresenter {
     public List<Item> getItems() {
         return items;
     }
+
+    public List<String> getSavedPics(){return folderManager.getSavedPics();}
+
+    public void updateSavedPic(){
+        folderManager.updateSavedPics();
+    }
+
 }
 

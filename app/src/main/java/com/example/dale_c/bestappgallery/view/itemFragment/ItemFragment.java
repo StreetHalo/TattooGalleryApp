@@ -1,6 +1,8 @@
 package com.example.dale_c.bestappgallery.view.itemFragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.Button;
 
 import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.view.InterfaceView;
+import com.example.dale_c.bestappgallery.view.MainActivity;
 
 /**
  * Created by Dale_C on 03.12.2017.
@@ -29,10 +32,12 @@ public class ItemFragment extends Fragment {
     private ItemAdapter adapter;
     private int position;
     private InterfaceView interfaceView;
-
+    private AlertDialog.Builder dialogDelPic;
+    private String fragment;
 
     @SuppressLint("ValidFragment")
-    public ItemFragment(InterfaceView interfaceView){
+    public ItemFragment(InterfaceView interfaceView, String fragment){
+        this.fragment = fragment;
         this.interfaceView = interfaceView;
     }
 
@@ -41,8 +46,8 @@ public class ItemFragment extends Fragment {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         recyclerView = new RecyclerView(getActivity());
-    }
 
+    }
 
 
     @Nullable
@@ -60,6 +65,7 @@ public class ItemFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         recyclerView.setLayoutManager(lm);
         recyclerView.setAdapter(adapter);
+        recyclerView.scrollToPosition(position);
 
          plusButton = (Button)v.findViewById(R.id.test);
         plusButton.setOnClickListener(new View.OnClickListener() {
@@ -89,12 +95,18 @@ public class ItemFragment extends Fragment {
     private void nextPosition(){
     position +=1;
     recyclerView.scrollToPosition(position);
+        interfaceView.setSelectedPic(position);
+        if(fragment.equals(MainActivity.FAV_ITEM_FRAGMENT)) interfaceView.setFavItemToolbar();
+        else interfaceView.setItemToolbar();
     }
 
     private void prePosition(){
         position -=1;
         if(position<=0)position=0;
         recyclerView.scrollToPosition(position);
+        interfaceView.setSelectedPic(position);
+       if(fragment.equals(MainActivity.FAV_ITEM_FRAGMENT)) interfaceView.setFavItemToolbar();
+       else interfaceView.setItemToolbar();
     }
 
     public int getPosition(){
@@ -102,18 +114,43 @@ public class ItemFragment extends Fragment {
     }
 
 
+    public void setDelDialog(){
+        dialogDelPic = new AlertDialog.Builder(getActivity());
+
+        dialogDelPic.setTitle(R.string.title_for_dialog)
+                .setMessage(R.string.message_for_dialog)
+                .setCancelable(false)
+                .setPositiveButton(R.string.positive_for_dialog, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        interfaceView.delFavPic();
+                    }
+                })
+                .setNegativeButton(R.string.negative_for_dialog, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        interfaceView.setItemToolbar();
+        Log.d(TAG, "onResume: ");
         recyclerView.scrollToPosition(position);
-        
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy pow: ");
         interfaceView.setGalleryToolbar();
+        interfaceView.uploadFavGalleryAdapter();
+
     }
 }

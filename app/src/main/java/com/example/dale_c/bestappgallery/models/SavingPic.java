@@ -1,4 +1,4 @@
-package com.example.dale_c.bestappgallery;
+package com.example.dale_c.bestappgallery.models;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -16,14 +16,14 @@ import java.io.FileOutputStream;
  * Created by Dale_C on 21.12.2017.
  */
 
-public class SavingImg implements Target {
+public class SavingPic implements Target {
     private final String name;
     private ImageView imageView;
     public static final String TAG= "TARGET";
 
 
 
-    public SavingImg(String name, ImageView imageView) {
+    public SavingPic(String name, ImageView imageView) {
         this.name = name;
         this.imageView = imageView;
     }

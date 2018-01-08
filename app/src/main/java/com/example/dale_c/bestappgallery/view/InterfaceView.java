@@ -4,7 +4,9 @@ import android.widget.ImageView;
 
 import com.example.dale_c.bestappgallery.json.Item;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Dale_C on 19.12.2017.
@@ -12,17 +14,28 @@ import java.util.List;
 
 public interface InterfaceView {
 
+
     void setFragment(String s);
 
-    void setGalleryAdapter(List<Item> items);
+    void uploadGalleryAdapter();
 
-    void setItemAdapter(int position);
+    void uploadFavGalleryAdapter();
 
-    List<Item> getItems();
+    void setItemAdapter();
+
+    void setFavAdapter();
+
+    List<String> getSavedPics();
 
     void setImageView(ImageView imageView);
 
+    void setGalleryToolbar();
+
     void setItemToolbar();
 
-    void setGalleryToolbar();
+    void setFavItemToolbar();
+
+    void setSelectedPic(int position);
+
+    void delFavPic();
 }

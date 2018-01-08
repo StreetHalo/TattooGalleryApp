@@ -1,27 +1,22 @@
 package com.example.dale_c.bestappgallery.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.example.dale_c.bestappgallery.json.Item;
 import com.example.dale_c.bestappgallery.presenter.Presenter;
 import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.view.itemFragment.ItemFragment;
@@ -29,80 +24,84 @@ import com.example.dale_c.bestappgallery.view.itemFragment.ItemAdapter;
 import com.example.dale_c.bestappgallery.view.galleryFragment.GalleryFragment;
 import com.example.dale_c.bestappgallery.view.galleryFragment.GalleryAdapter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity  extends AppCompatActivity implements InterfaceView {
-    public static final String TAG = "Activity";
+    private static final String TAG = "Activity";
     public static final String ITEM_FRAGMENT = "itemFragment";
+    public static final String FAV_ITEM_FRAGMENT = "favItemFragment";
     public static final String GALLERY_FRAGMENT = "galleryFragment";
     public static final String FAV_GALLERY_FRAGMENT = "favGalleryFragment";
 
-    FragmentTransaction fm;
-    Presenter presenter;
-    GalleryFragment galleryFragment;
-    GalleryFragment favGalleryFragment;
-    ItemFragment itemFragment;
-    private String layoutFragment;
-    private ImageView imageView;
-    private MenuItem  likeItem;
-    private MenuItem searchItem;
-    private MenuItem favGallery;
+   private FragmentTransaction fm;
+   private Presenter presenter;
+   private GalleryFragment galleryFragment;
+   private GalleryFragment favGalleryFragment;
+   private ItemFragment itemFragment;
+   private ItemFragment favItemFragment;
 
-   private List<Item> items;
-    InputMethodManager imm;
+   private ImageView imageView;
+   private MenuItem  likeItem;
+   private MenuItem searchItem;
+   private MenuItem favGallery;
+   private MenuItem delItem;
+   private MenuItem shareItem;
+
+   private Set<String> requests;
+   private List<String> savePics;
+   private Boolean isDel = false;
+   private int selectedPic;
+   private InputMethodManager imm;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main_activity);
-        layoutFragment = "OhHiMark";
 
+        requests = new HashSet<>();
+        requests.add("Best tattoo ever");
         Toolbar mActionBarToolbar = (Toolbar)findViewById(R.id.toolbar);
-
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         setSupportActionBar(mActionBarToolbar);
 
          presenter = Presenter.getInstance();
          presenter.setInterfaceView(this);
 
-         galleryFragment = new GalleryFragment(this);
-         itemFragment =  new ItemFragment(this);
-
+         galleryFragment = new GalleryFragment(this,GALLERY_FRAGMENT);
+         itemFragment =  new ItemFragment(this, ITEM_FRAGMENT);
+         favGalleryFragment = new GalleryFragment(this,FAV_GALLERY_FRAGMENT);
+         favItemFragment = new ItemFragment(this, FAV_ITEM_FRAGMENT);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {getMenuInflater().inflate(R.menu.menu_main_activity,menu);
 
-       searchItem = menu.findItem(R.id.action_search);
-
-        likeItem = menu.findItem(R.id.action_like);
+        searchItem = menu.findItem(R.id.action_search);
+        likeItem = menu.findItem(R.id.like_pic);
         favGallery = menu.findItem(R.id.fav_gallery);
+        delItem = menu.findItem(R.id.del_pic);
+        shareItem = menu.findItem(R.id.share_pic);
+        setFragment(GALLERY_FRAGMENT);
 
-        setGalleryToolbar();
-
-     // final SearchView searchView = (SearchView) searchItem.getActionView();
       final AppCompatAutoCompleteTextView searchView = (AppCompatAutoCompleteTextView) searchItem.getActionView();
 
-        searchView.setDropDownWidth(300);
-       searchView.setWidth(750);
-       searchView.setSingleLine();
-        //
-     //   searchView.setFocusableInTouchMode(true);
+      searchView.setDropDownWidth(300);
+      searchView.setWidth(750);
+      searchView.setSingleLine();
 
-        Log.d(TAG, "onCreateOptionsMenu: "+searchView);
-        final String[] mCats = { "Мурзик", "Рыжик", "Барсик", "Борис",
-                "Мурзилка", "Мурка" };
-
-        searchView.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, mCats));
-
-
-        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+      searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                searchView.requestFocus();
+                searchView.setAdapter(new ArrayAdapter<String>
+                        (searchView.getContext(),
+                                android.R.layout.simple_dropdown_item_1line,
+                                requests.toArray(new String[requests.size()])));
 
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                searchView.requestFocus();
                 return true;
             }
         });
@@ -112,90 +111,108 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Log.d(TAG, "onMenuItemClick: ");
-             if(layoutFragment.equals(ITEM_FRAGMENT))
-             presenter.saveLikePosition(itemFragment.getPosition(),imageView.getContext(), imageView);
+
+             if(itemFragment.isVisible()) {
+                  presenter.saveLikePosition(itemFragment.getPosition(),imageView.getContext(), imageView);
+                 setItemToolbar();
+             }
+                return true;
+            }
+        });
+
+        delItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                favItemFragment.setDelDialog();
                 return true;
             }
         });
 
 
-   /*     searchView.setOnClickListener(new View.OnClickListener() {
+
+        favGallery.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public void onClick(View view) {
-
-
-        //    presenter.SearchWord(searchView.getText().toString());
-              //  if(imm.getCurrentInputMethodSubtype().toString()=="RESULT_HIDDEN")
-                Log.d(TAG, "onClick: ");
-              searchView.clearFocus();
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                presenter.updateSavedPic();
+                Log.d(TAG, "onMenuItemClick: fav");
+                setFragment(FAV_GALLERY_FRAGMENT);
+                return true;
             }
-        });*/
+        });
+
+        shareItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+                Log.d(TAG, "onMenuItemClick: "+"Share Pic");
+                return true;
+            }
+        });
 
         searchView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                Log.d(TAG, "onKey: "+keyEvent.getKeyCode());
 
 
-                if(keyEvent.getKeyCode()==KeyEvent.KEYCODE_ENTER){
-                    Log.d(TAG, "onKey23: ");
+                if(keyEvent.getKeyCode()==KeyEvent.KEYCODE_ENTER) {
                     searchView.clearFocus();
 
-                    presenter.SearchWord(searchView.getText().toString());
-                imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);}
+                    if (searchView.getText().toString().length() == 0) {
+
+                        Toast.makeText
+                                (MainActivity.this, "Введите запрос, пес", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+
+                    else {
+                        Log.d(TAG, "onKey: "+searchView.getText().toString());
+                        presenter.SearchWord(searchView.getText().toString());
+                        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
+                        requests.add(searchView.getText().toString());
+                    }
+                }
                 return true;
             }
         });
-
-
-        /*searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                presenter.SearchWord(query);
-                searchView.clearFocus();
-                return true;
-            }
-
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                presenter.foundOldRequest(newText);
-
-                return true;
-            }
-        });*/
-
 
         return true;
     }
 
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         return super.onOptionsItemSelected(item);
-
     }
 
     @Override
-    public void setFragment(String s) {
+    public void setFragment(String fragment) {
         fm = getSupportFragmentManager().beginTransaction();
 
-
-        switch (s){
+        switch (fragment){
 
             case ITEM_FRAGMENT:
                 fm.add(R.id.fragment_container,itemFragment,ITEM_FRAGMENT);
                 setItemToolbar();
                 break;
+
+            case FAV_ITEM_FRAGMENT:
+                fm.add(R.id.fragment_container,favItemFragment,FAV_ITEM_FRAGMENT);
+                setFavItemToolbar();
+                break;
             case GALLERY_FRAGMENT:
-                fm.add(R.id.fragment_container,galleryFragment,GALLERY_FRAGMENT);
+                if(favGalleryFragment.isVisible())
+                    fm.replace(R.id.fragment_container,galleryFragment,GALLERY_FRAGMENT);
+                else
+                    fm.add(R.id.fragment_container,galleryFragment,GALLERY_FRAGMENT);
                 setGalleryToolbar();
                 break;
             case FAV_GALLERY_FRAGMENT:
-                fm.add(R.id.fragment_container,favGalleryFragment);
+                if(galleryFragment.isVisible())
+                    fm.replace(R.id.fragment_container,favGalleryFragment,FAV_GALLERY_FRAGMENT);
+                else
+                    fm.add(R.id.fragment_container,favGalleryFragment,FAV_GALLERY_FRAGMENT);
+                setGalleryToolbar();
                 break;
 
             default:
@@ -203,26 +220,76 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
         }
         fm.addToBackStack(null);
         fm.commit();
-        layoutFragment = s;
     }
 
     @Override
-    public void setGalleryAdapter(List<Item> items) {
-        this.items = items;
-       if(galleryFragment.getTag()==null) setFragment(GALLERY_FRAGMENT);
-        else galleryFragment.setAdapter(new GalleryAdapter(items,this));
+    public void uploadGalleryAdapter() {
+        Log.d(TAG, "uploadGalleryAdapter: "+galleryFragment.isVisible());
+        if(!galleryFragment.isVisible())setFragment(GALLERY_FRAGMENT);
+        galleryFragment.setAdapter(new GalleryAdapter(presenter.getItems(),this, GALLERY_FRAGMENT));
+    }
 
-    }
     @Override
-    public List<Item> getItems() {
-        return items;
+    public void uploadFavGalleryAdapter() {
+        savePics = presenter.getSavedPics();
+        if(isDel) {
+            savePics.remove(selectedPic);
+            isDel = false;
+        }
+        if(favGalleryFragment.isVisible()){
+            Log.d(TAG, "uploadFavGalleryAdapter: "+favGalleryFragment.isVisible());
+        favGalleryFragment.setAdapter(new GalleryAdapter(savePics,this, FAV_GALLERY_FRAGMENT));}
     }
+
     @Override
-    public void setItemAdapter(int position) {
-        itemFragment.setAdapter(new ItemAdapter(presenter.getItems(),this),position);
+    public void setItemAdapter() {
+        Log.d(TAG, "setItemAdapter: "+ selectedPic);
+        itemFragment.setAdapter(new ItemAdapter(presenter.getItems(),this, ITEM_FRAGMENT), selectedPic);
         setFragment(ITEM_FRAGMENT);
-
     }
+
+    @Override
+    public void setFavAdapter() {
+        favItemFragment.setAdapter(new ItemAdapter(presenter.getSavedPics(),this,FAV_ITEM_FRAGMENT), selectedPic);
+        setFragment(FAV_ITEM_FRAGMENT);
+    }
+
+    @Override
+    public void setGalleryToolbar(){
+        searchItem.setVisible(true);
+        favGallery.setVisible(true);
+        likeItem.setVisible(false);
+        shareItem.setVisible(false);
+        delItem.setVisible(false);
+    }
+    @Override
+    public void setItemToolbar(){
+
+     if(!presenter.getItems().get(selectedPic).getLiked()){
+           likeItem.setIcon(R.drawable.ic_favorite_black_24dp);
+           likeItem.setEnabled(true);
+        }
+        else {
+         likeItem.setIcon(R.drawable.ic_check_black_24dp);
+         likeItem.setEnabled(false);
+        }
+        shareItem.setVisible(true);
+        likeItem.setVisible(true);
+        favGallery.setVisible(false);
+        searchItem.setVisible(false);
+        searchItem.collapseActionView();
+    }
+
+    @Override
+    public void setFavItemToolbar(){
+        delItem.setVisible(true);
+        shareItem.setVisible(true);
+        likeItem.setVisible(false);
+        favGallery.setVisible(false);
+        searchItem.setVisible(false);
+        searchItem.collapseActionView();
+    }
+
 
     @Override
     public void setImageView(ImageView imageView) {
@@ -230,22 +297,24 @@ public class MainActivity  extends AppCompatActivity implements InterfaceView {
         this.imageView = imageView;
     }
 
+
     @Override
-    public void setGalleryToolbar(){
-        likeItem.setIcon(R.drawable.ic_favorite_black_24dp);
-        favGallery.setIcon(R.drawable.ic_photo_library_black_24dp);
-        likeItem.setVisible(true);
-        searchItem.setVisible(true);
-        favGallery.setVisible(true);
+    public void setSelectedPic(int position) {
+
+        selectedPic = position;
+    }
+
+    @Override
+    public void delFavPic() {
+        presenter.delPic(selectedPic);
+        isDel = true;
+        onBackPressed();
     }
 
 
     @Override
-    public void setItemToolbar(){
-        likeItem.setIcon(R.drawable.ic_favorite_black_24dp);
-        likeItem.setVisible(true);
-        favGallery.setVisible(false);
-        searchItem.setVisible(false);
-        searchItem.collapseActionView();
+    public List<String> getSavedPics(){
+
+        return presenter.getSavedPics();
     }
 }

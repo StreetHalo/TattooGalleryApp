@@ -12,6 +12,7 @@ import com.example.dale_c.bestappgallery.json.Item;
 import com.example.dale_c.bestappgallery.view.InterfaceView;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +24,26 @@ import java.util.List;
 
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  {
+
     private static final String TAG = "ItemAdapter";
-    private List<Item> mItems = new ArrayList<>();
-    private  Item galleryItem;
-    private int position;
+    private static final String ITEM_FRAGMENT = "itemFragment";
+    private static final String FAV_ITEM_FRAGMENT = "favItemFragment";
+    private List<?> mItems = new ArrayList<>();
+    private Item galleryItem;
+    private String favGalleryItem;
     private InterfaceView interfaceView;
+    private String choosenFragment;
 
-
-    public ItemAdapter(List<Item> mItems, InterfaceView interfaceView){
+    public ItemAdapter(List<?> mItems, InterfaceView interfaceView, String fragment){
+        choosenFragment = fragment;
         this.interfaceView = interfaceView;
         if(mItems!=null) this.mItems = mItems;
     }
+
+
     @Override
     public PhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder: ");
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_adapter, parent, false);
         PhotoHolder vh = new PhotoHolder(view);
         return vh;
@@ -44,15 +51,40 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  
 
     @Override
     public void onBindViewHolder(final PhotoHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: ");
-        galleryItem = mItems.get(position);
-       // interfaceView.setImageView(holder.mItemImageView);
 
-        Picasso
-                .with(holder.itemView.getContext())
-                .load(galleryItem.getMedia())
-                .placeholder(R.layout.loading_animation)
-                .into(holder.mItemImageView);
+
+       switch (choosenFragment) {
+
+           case ITEM_FRAGMENT:
+               Log.d(TAG, "ITEM_FRAGMENT: ");
+               galleryItem = (Item) mItems.get(position);
+               interfaceView.setImageView(holder.mItemImageView);
+               interfaceView.setItemToolbar();
+
+               Picasso
+                   .with(holder.itemView.getContext())
+                   .load(galleryItem.getMedia())
+                   .placeholder(R.layout.loading_animation)
+                   .into(holder.mItemImageView);
+           break;
+
+           case FAV_ITEM_FRAGMENT:
+
+               Log.d(TAG, "FAV_ITEM_FRAGMENT "+position);
+               favGalleryItem = (String) mItems.get(position);
+               interfaceView.setImageView(holder.mItemImageView);
+               interfaceView.setFavItemToolbar();
+
+               Log.d(TAG, "onBindViewHolder: "+favGalleryItem);
+               Picasso
+                       .with(holder.itemView.getContext())
+                       .load(new File("/storage/emulated/0/Pictures/Ink/"+favGalleryItem))
+                       .placeholder(R.layout.loading_animation)
+                       .into(holder.mItemImageView);
+               break;
+           default:
+               break;
+       }
     }
 
     @Override
@@ -70,13 +102,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  
         }
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
 }
 
 

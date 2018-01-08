@@ -1,8 +1,12 @@
 
 package com.example.dale_c.bestappgallery.json;
 
+import android.util.Log;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import static android.content.ContentValues.TAG;
 
 public class Item {
 
@@ -54,6 +58,20 @@ public class Item {
     @SerializedName("count")
     @Expose
     private int count;
+
+    private Boolean liked=false;
+
+    public Boolean getLiked() {
+        Log.d(TAG, "setLiked2: "+liked);
+
+        return liked;
+    }
+
+    public void setLiked() {
+        if(liked)liked = false;
+        else liked = true;
+        Log.d(TAG, "setLiked1: "+this.liked);
+    }
 
     public String getTitle() {
         return title;
