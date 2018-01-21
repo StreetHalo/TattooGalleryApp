@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Background"
+    >
+    <include layout="@layout/toolbar"/>
+
+
+
+        <FrameLayout
+
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/toolbar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+        </FrameLayout>
+
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="@color/Toolbar"
+        android:alpha="0.6"
+        android:backgroundTint="@color/white"
+        android:backgroundTintMode="@color/black"
+        android:singleLine="true" />
+
+
+
+
+</RelativeLayout>
+
+
