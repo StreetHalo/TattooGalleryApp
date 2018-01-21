@@ -9,7 +9,8 @@ import android.widget.ImageView;
 
 import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.json.Item;
-import com.example.dale_c.bestappgallery.view.InterfaceView;
+import com.example.dale_c.bestappgallery.view.mainActivity.ControlItemFragment;
+import com.example.dale_c.bestappgallery.view.mainActivity.InterfaceView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -31,12 +32,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  
     private List<?> mItems = new ArrayList<>();
     private Item galleryItem;
     private String favGalleryItem;
-    private InterfaceView interfaceView;
+    private ControlItemFragment controlItemFragment;
     private String choosenFragment;
 
-    public ItemAdapter(List<?> mItems, InterfaceView interfaceView, String fragment){
+    public ItemAdapter(List<?> mItems, ControlItemFragment controlItemFragment, String fragment){
+
         choosenFragment = fragment;
-        this.interfaceView = interfaceView;
+        this.controlItemFragment = controlItemFragment;
         if(mItems!=null) this.mItems = mItems;
     }
 
@@ -58,8 +60,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  
            case ITEM_FRAGMENT:
                Log.d(TAG, "ITEM_FRAGMENT: ");
                galleryItem = (Item) mItems.get(position);
-               interfaceView.setImageView(holder.mItemImageView);
-               interfaceView.setItemToolbar();
+               controlItemFragment.setImageView(holder.mItemImageView);
+               controlItemFragment.setItemToolbar();
 
                Picasso
                    .with(holder.itemView.getContext())
@@ -72,8 +74,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.PhotoHolder>  
 
                Log.d(TAG, "FAV_ITEM_FRAGMENT "+position);
                favGalleryItem = (String) mItems.get(position);
-               interfaceView.setImageView(holder.mItemImageView);
-               interfaceView.setFavItemToolbar();
+               controlItemFragment.setImageView(holder.mItemImageView);
+               controlItemFragment.setFavItemToolbar();
 
                Log.d(TAG, "onBindViewHolder: "+favGalleryItem);
                Picasso

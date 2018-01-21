@@ -1,6 +1,8 @@
 
 package com.example.dale_c.bestappgallery.json;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.annotations.Expose;
@@ -8,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import static android.content.ContentValues.TAG;
 
-public class Item {
+public class Item implements Parcelable {
 
     @SerializedName("title")
     @Expose
@@ -59,18 +61,25 @@ public class Item {
     @Expose
     private int count;
 
-    private Boolean liked=false;
+    private boolean liked=false;
+
+    public Item(Parcel in) {
+
+        String[] data = new String[6] ;
+        in.readStringArray(data);
+
+    }
 
     public Boolean getLiked() {
-        Log.d(TAG, "setLiked2: "+liked);
+        Log.d(TAG, "setLiked2: " + liked);
 
         return liked;
     }
 
     public void setLiked() {
-        if(liked)liked = false;
-        else liked = true;
-        Log.d(TAG, "setLiked1: "+this.liked);
+      if (liked) liked = false;
+       else liked = true;
+        Log.d(TAG, "setLiked1: " + this.liked);
     }
 
     public String getTitle() {
@@ -201,4 +210,31 @@ public class Item {
         this.count = count;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeStringArray(new String[] {this.thumbnail,
+                this.id,
+                this.title,
+                this.width,
+                this.height,
+                this.width,
+                this.media
+                });
+    }
+
+    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
+        public Item createFromParcel(Parcel in) {
+            return new Item(in);
+        }
+
+        public Item[] newArray(int size) {
+            return new Item[size];
+        }
+    };
 }

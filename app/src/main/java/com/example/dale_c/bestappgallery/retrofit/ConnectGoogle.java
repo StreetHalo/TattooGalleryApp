@@ -3,7 +3,7 @@ package com.example.dale_c.bestappgallery.retrofit;
 import android.util.Log;
 
 
-import com.example.dale_c.bestappgallery.presenter.interfacePresenter;
+import com.example.dale_c.bestappgallery.presenter.InterfacePresenter;
 import com.example.dale_c.bestappgallery.json.ParseGson;
 import com.example.dale_c.bestappgallery.json.Translate;
 
@@ -30,11 +30,11 @@ public class ConnectGoogle {
     Translate translate = new Translate();
 
 
-    private interfacePresenter interfacePresenter;
+    private InterfacePresenter InterfacePresenter;
 
 
-    public void registerCallBack(interfacePresenter interfacePresenter){
-        this.interfacePresenter = interfacePresenter;
+    public void registerCallBack(InterfacePresenter InterfacePresenter){
+        this.InterfacePresenter = InterfacePresenter;
     }
 
 
@@ -59,7 +59,7 @@ public class ConnectGoogle {
             @Override
             public void onResponse(Call<ParseGson> call, Response<ParseGson> response) {
                parseGson = response.body();
-                interfacePresenter.callingbackGson(parseGson);
+                InterfacePresenter.callingbackGson(parseGson);
 
             }
 

@@ -1,5 +1,6 @@
 package com.example.dale_c.bestappgallery.view.galleryFragment;
 
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,12 +10,16 @@ import android.widget.ImageView;
 
 import com.example.dale_c.bestappgallery.R;
 import com.example.dale_c.bestappgallery.json.Item;
-import com.example.dale_c.bestappgallery.view.InterfaceView;
+import com.example.dale_c.bestappgallery.view.mainActivity.ControlItemFragment;
+import com.example.dale_c.bestappgallery.view.mainActivity.InterfaceView;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by Dale_C on 25.11.2017.
@@ -32,16 +37,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoHol
     private List<?> mItems = new ArrayList<>();
     private Item galleryItem;
     private String favGalleryItem;
-    private int position;
-    private InterfaceView interfaceView;
+    private ControlItemFragment controlItemFragment;
     private String choosenFragment;
 
 
+    public GalleryAdapter(List<?> mItems, ControlItemFragment controlItemFragment, String fragment){
 
-    public GalleryAdapter(List<?> mItems, InterfaceView interfaceView, String fragment){
-        Log.d(TAG, "GalleryAdapter: "+mItems.size());
         choosenFragment = fragment;
-        this.interfaceView = interfaceView;
+        this.controlItemFragment = controlItemFragment;
         if(mItems!=null) this.mItems = mItems;
     }
 
@@ -60,39 +63,39 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoHol
 
         switch (choosenFragment){
             case GALLERY_FRAGMENT:
+
                 galleryItem = (Item) mItems.get(position);
                 holder.mItemImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        interfaceView.setSelectedPic(position);
-                        interfaceView.setItemAdapter();
+                        controlItemFragment.setSelectedPic(position);
+                        controlItemFragment.setItemAdapter();
                     }
                 });
-                Log.d(TAG, "onBindViewHolder: "+position);
 
                 Picasso
                         .with(holder.itemView.getContext())
                         .load("https:"+galleryItem.getThumbnail())
+                        .transform(new RoundedCornersTransformation(10,10))
+                        .resize(350,400)
                         .placeholder(R.layout.loading_animation)
                         .into(holder.mItemImageView);
-
-
-
                 break;
             case FAV_GALLERY_FRAGMENT:
                 holder.mItemImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        interfaceView.setSelectedPic(position);
-                        interfaceView.setFavAdapter();
+                        controlItemFragment.setSelectedPic(position);
+                        controlItemFragment.setFavAdapter();
                     }
                 });
               favGalleryItem = (String) mItems.get(position);
-                Log.d(TAG, "onBindViewHolderFav: "+favGalleryItem);
                 Picasso
                         .with(holder.itemView.getContext())
                         .load(new File("/storage/emulated/0/Pictures/Ink/"+favGalleryItem))
                         .placeholder(R.layout.loading_animation)
+                        .transform(new RoundedCornersTransformation(10,0))
+                        .resize(350,400)
                         .into(holder.mItemImageView);
 
 

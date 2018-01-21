@@ -2,7 +2,7 @@ package com.example.dale_c.bestappgallery.models;
 
 import android.util.Log;
 
-import com.example.dale_c.bestappgallery.presenter.interfacePresenter;
+import com.example.dale_c.bestappgallery.presenter.InterfacePresenter;
 import com.example.dale_c.bestappgallery.retrofit.ConnectGoogle;
 
 /**
@@ -25,9 +25,9 @@ public class Repository  {
          conTranslate = new ConnectGoogle(URL_TRANSLATE);
     }
 
-    public void conRetrofit(String word, interfacePresenter interfacePresenter, int n){
+    public void conRetrofit(String word, InterfacePresenter InterfacePresenter, int n){
         Log.d(TAG, "conRetrofit: "+word);
-        conImage.registerCallBack(interfacePresenter);
+        conImage.registerCallBack(InterfacePresenter);
         conImage.getImage(word, n);
 
     }

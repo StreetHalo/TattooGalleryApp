@@ -8,7 +8,7 @@ import com.example.dale_c.bestappgallery.models.FolderManager;
 import com.example.dale_c.bestappgallery.models.Repository;
 import com.example.dale_c.bestappgallery.models.SavingPic;
 import com.example.dale_c.bestappgallery.models.SharedPref;
-import com.example.dale_c.bestappgallery.view.InterfaceView;
+import com.example.dale_c.bestappgallery.view.mainActivity.InterfaceView;
 import com.example.dale_c.bestappgallery.json.Item;
 import com.example.dale_c.bestappgallery.json.ParseGson;
 import com.squareup.picasso.Picasso;
@@ -21,7 +21,7 @@ import java.util.Set;
  * Created by Dale_C on 25.11.2017.
  */
 
-public class Presenter implements interfacePresenter {
+public class Presenter implements InterfacePresenter {
     private static Presenter presenter;
     private Repository repository;
     private SharedPref sharedPref;
@@ -43,7 +43,7 @@ public class Presenter implements interfacePresenter {
 
     private Presenter(Context context){
         repository = new Repository();
-        folderManager = new FolderManager();
+        folderManager = new FolderManager(this);
         sharedPref = new SharedPref(context);
     }
 
@@ -56,11 +56,15 @@ public class Presenter implements interfacePresenter {
         folderManager.delSavedPic(position);
     }
 
+
     public void saveLikePosition(int position, Context context, ImageView imageView){
-                items.get(position).setLiked();
+
+
+        items.get(position).setLiked();
                 Picasso.with(context)
                         .load(items.get(position).getMedia())
                         .into(new SavingPic(items.get(position).getId(),imageView));
+        interfaceView.uploadItemAdapter(items);
             }
 
 
@@ -82,14 +86,9 @@ public class Presenter implements interfacePresenter {
     public void callingbackGson(ParseGson parseGson) {
 
         items=parseGson.getData().getResult().getItems();
+        Log.d(TAG, "callingbackGson: "+items.size());
+        if(items.size()!=0) interfaceView.uploadGalleryAdapter(items);
 
-        if(items.size()!=0) interfaceView.uploadGalleryAdapter();
-
-    }
-
-
-    public List<Item> getItems() {
-        return items;
     }
 
     public List<String> getSavedPics(){return folderManager.getSavedPics();}

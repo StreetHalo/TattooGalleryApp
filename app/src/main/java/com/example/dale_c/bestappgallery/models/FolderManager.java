@@ -1,17 +1,10 @@
 package com.example.dale_c.bestappgallery.models;
 
-import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
-
-import com.example.dale_c.bestappgallery.view.MainActivity;
+import com.example.dale_c.bestappgallery.presenter.InterfacePresenter;
+import com.example.dale_c.bestappgallery.view.mainActivity.InterfaceView;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,9 +18,12 @@ public class FolderManager {
     private static final String TAG = "SavedPics";
     private   List<String> savedPics;
     private Boolean isDel;
+    private InterfacePresenter interfacePresenter;
 
-    public FolderManager()  {
-        savedPics = new ArrayList<>();
+
+    public FolderManager(InterfacePresenter interfacePresenter)  {
+        this.interfacePresenter = interfacePresenter;
+   savedPics = new ArrayList<>();
         folder = new File("/storage/emulated/0/Pictures"+ File.separator + "Ink");
         if (!folder.exists()) {
             Boolean a =folder.mkdirs();
@@ -37,7 +33,7 @@ public class FolderManager {
 
     public void updateSavedPics(){
 
-    savedPics.clear();
+   savedPics.clear();
     for(File file:folder.listFiles()){
             savedPics.add(file.getName());
         }
@@ -48,10 +44,8 @@ public class FolderManager {
     }
 
     public void delSavedPic(int id){
-        Log.d(TAG, "delSavedPic: "+savedPics.get(id));
-        Log.d(TAG, "delSavedPic: "+id);
+
         delPic = new File(path+savedPics.get(id)) ;
         isDel = delPic.delete();
-        Log.d(TAG, "delSavedPic: "+"DEL"+isDel);
     }
 }

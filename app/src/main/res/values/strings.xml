@@ -6,4 +6,7 @@
     <string name="message_for_dialog">You\'ll lose this photo.</string>
     <string name="negative_for_dialog">Cancel</string>
     <string name="positive_for_dialog">DELETE</string>
+    <string name="search_button">SEARCH</string>
+    <string name="fav_button">GALLERY</string>
+
 </resources>
